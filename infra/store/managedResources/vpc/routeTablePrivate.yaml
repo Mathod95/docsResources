@@ -1,0 +1,20 @@
+apiVersion: ec2.aws.m.upbound.io/v1beta1
+kind: RouteTable
+metadata:
+  name: route-table-private
+  namespace: crossplane-system
+  labels:
+    app: vpc-main
+    type: private
+spec:
+  forProvider:
+    region: eu-west-1
+    vpcIdSelector:
+      matchLabels:
+        app: vpc-main
+    tags:
+      Name: route-table-private
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig
