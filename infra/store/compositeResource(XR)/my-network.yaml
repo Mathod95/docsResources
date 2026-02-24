@@ -1,0 +1,9 @@
+apiVersion: example.io/v1alpha1
+kind: XNetwork
+metadata:
+  name: my-network
+  namespace: crossplane-system
+spec:
+  region: eu-west-1
+  vpcCidr: 10.0.0.0/16
+  subnetCidr: 10.0.1.0/24

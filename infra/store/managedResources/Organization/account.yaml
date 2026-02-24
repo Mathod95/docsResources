@@ -1,0 +1,41 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: Account
+metadata:
+  name: production
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: production
+    email: mathod93150+production@gmail.com
+    parentId: ou-bip6-xtlqtf61
+  providerConfigRef:
+    name: default
+    kind: ProviderConfig
+---
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: Account
+metadata:
+  name: staging
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: staging
+    email: mathod93150+staging@gmail.com
+    parentId: ou-bip6-xtlqtf61
+  providerConfigRef:
+    name: default
+    kind: ProviderConfig
+---
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: Account
+metadata:
+  name: management
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: management
+    email: mathod93150+management@gmail.com
+    parentId: ou-bip6-xtlqtf61
+  providerConfigRef:
+    name: default
+    kind: ProviderConfig

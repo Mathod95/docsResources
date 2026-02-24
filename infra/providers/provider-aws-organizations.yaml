@@ -1,0 +1,6 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: upbound-provider-aws-organizations
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-organizations:v2.4.0

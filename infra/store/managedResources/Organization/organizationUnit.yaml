@@ -1,0 +1,12 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: OrganizationalUnit
+metadata:
+  name: eks-clusters
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: eks-clusters
+    parentId: r-bip6
+  providerConfigRef:
+    name: default
+    kind: ProviderConfig

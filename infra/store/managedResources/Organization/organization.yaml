@@ -1,0 +1,11 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: Organization
+metadata:
+  name: my-organization
+  namespace: crossplane-system
+spec:
+  forProvider:
+    featureSet: ALL
+  providerConfigRef:
+    name: default
+    kind: ProviderConfig
