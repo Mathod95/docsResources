@@ -1,0 +1,77 @@
+apiVersion: ec2.aws.m.upbound.io/v1beta1
+kind: Subnet
+metadata:
+  name: subnet-private-a
+  namespace: crossplane-system
+  labels:
+    app: vpc-main
+    type: private
+    az: eu-west-1a
+spec:
+  forProvider:
+    region: eu-west-1
+    availabilityZone: eu-west-1a
+    cidrBlock: 10.0.11.0/24
+    mapPublicIpOnLaunch: false
+    vpcIdSelector:
+      matchLabels:
+        app: vpc-main
+    tags:
+      Name: subnet-private-a
+      ManagedBy: crossplane
+      kubernetes.io/role/internal-elb: "1"
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig
+---
+apiVersion: ec2.aws.m.upbound.io/v1beta1
+kind: Subnet
+metadata:
+  name: subnet-private-b
+  namespace: crossplane-system
+  labels:
+    app: vpc-main
+    type: private
+    az: eu-west-1b
+spec:
+  forProvider:
+    region: eu-west-1
+    availabilityZone: eu-west-1b
+    cidrBlock: 10.0.12.0/24
+    mapPublicIpOnLaunch: false
+    vpcIdSelector:
+      matchLabels:
+        app: vpc-main
+    tags:
+      Name: subnet-private-b
+      ManagedBy: crossplane
+      kubernetes.io/role/internal-elb: "1"
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig
+---
+apiVersion: ec2.aws.m.upbound.io/v1beta1
+kind: Subnet
+metadata:
+  name: subnet-private-c
+  namespace: crossplane-system
+  labels:
+    app: vpc-main
+    type: private
+    az: eu-west-1c
+spec:
+  forProvider:
+    region: eu-west-1
+    availabilityZone: eu-west-1c
+    cidrBlock: 10.0.13.0/24
+    mapPublicIpOnLaunch: false
+    vpcIdSelector:
+      matchLabels:
+        app: vpc-main
+    tags:
+      Name: subnet-private-c
+      ManagedBy: crossplane
+      kubernetes.io/role/internal-elb: "1"
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig
