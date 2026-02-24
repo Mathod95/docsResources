@@ -1,0 +1,19 @@
+apiVersion: ec2.aws.m.upbound.io/v1beta1
+kind: VPC
+metadata:
+  name: main-vpc
+  namespace: crossplane-system
+  labels:
+    app: main-vpc
+spec:
+  forProvider:
+    region: eu-west-1
+    cidrBlock: 10.0.0.0/16
+    enableDnsSupport: true
+    enableDnsHostnames: true
+    tags:
+      Name: main-vpc
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: aws-provider-config
+    kind: ProviderConfig
