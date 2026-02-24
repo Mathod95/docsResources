@@ -1,18 +1,18 @@
 apiVersion: ec2.aws.m.upbound.io/v1beta1
 kind: RouteTableAssociation
 metadata:
-  name: route-table-association-public-a
+  name: public-rta-a
   namespace: crossplane-system
 spec:
   forProvider:
     region: eu-west-1
     routeTableIdSelector:
       matchLabels:
-        app: vpc-main
+        app: main-vpc
         type: public
     subnetIdSelector:
       matchLabels:
-        app: vpc-main
+        app: main-vpc
         type: public
         az: eu-west-1a
   providerConfigRef:
@@ -22,18 +22,18 @@ spec:
 apiVersion: ec2.aws.m.upbound.io/v1beta1
 kind: RouteTableAssociation
 metadata:
-  name: route-table-association-public-b
+  name: public-rta-b
   namespace: crossplane-system
 spec:
   forProvider:
     region: eu-west-1
     routeTableIdSelector:
       matchLabels:
-        app: vpc-main
+        app: main-vpc
         type: public
     subnetIdSelector:
       matchLabels:
-        app: vpc-main
+        app: main-vpc
         type: public
         az: eu-west-1b
   providerConfigRef:
@@ -43,18 +43,18 @@ spec:
 apiVersion: ec2.aws.m.upbound.io/v1beta1
 kind: RouteTableAssociation
 metadata:
-  name: route-table-association-public-c
+  name: public-rta-c
   namespace: crossplane-system
 spec:
   forProvider:
     region: eu-west-1
     routeTableIdSelector:
       matchLabels:
-        app: vpc-main
+        app: main-vpc
         type: public
     subnetIdSelector:
       matchLabels:
-        app: vpc-main
+        app: main-vpc
         type: public
         az: eu-west-1c
   providerConfigRef:

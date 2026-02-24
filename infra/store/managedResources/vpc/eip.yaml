@@ -1,19 +1,16 @@
 apiVersion: ec2.aws.m.upbound.io/v1beta1
-kind: RouteTable
+kind: EIP
 metadata:
-  name: private-rt
+  name: nat-eip
   namespace: crossplane-system
   labels:
     app: main-vpc
-    type: private
 spec:
   forProvider:
     region: eu-west-1
-    vpcIdSelector:
-      matchLabels:
-        app: main-vpc
+    domain: vpc
     tags:
-      Name: private-rt
+      Name: nat-eip
       ManagedBy: crossplane
   providerConfigRef:
     name: main

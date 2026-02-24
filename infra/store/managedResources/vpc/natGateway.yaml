@@ -1,19 +1,24 @@
 apiVersion: ec2.aws.m.upbound.io/v1beta1
-kind: RouteTable
+kind: NATGateway
 metadata:
-  name: private-rt
+  name: main-nat-gw
   namespace: crossplane-system
   labels:
     app: main-vpc
-    type: private
 spec:
   forProvider:
     region: eu-west-1
-    vpcIdSelector:
+    connectivityType: public
+    allocationIdSelector:
       matchLabels:
         app: main-vpc
+    subnetIdSelector:
+      matchLabels:
+        app: main-vpc
+        type: public
+        az: eu-west-1a
     tags:
-      Name: private-rt
+      Name: main-nat-gw
       ManagedBy: crossplane
   providerConfigRef:
     name: main

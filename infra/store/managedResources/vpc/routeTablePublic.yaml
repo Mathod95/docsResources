@@ -1,19 +1,19 @@
 apiVersion: ec2.aws.m.upbound.io/v1beta1
 kind: RouteTable
 metadata:
-  name: route-table-public
+  name: public-rt
   namespace: crossplane-system
   labels:
-    app: vpc-main
+    app: main-vpc
     type: public
 spec:
   forProvider:
     region: eu-west-1
     vpcIdSelector:
       matchLabels:
-        app: vpc-main
+        app: main-vpc
     tags:
-      Name: route-table-public
+      Name: public-rt
       ManagedBy: crossplane
   providerConfigRef:
     name: main

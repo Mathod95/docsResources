@@ -1,11 +1,8 @@
 apiVersion: ec2.aws.m.upbound.io/v1beta1
-kind: RouteTable
+kind: InternetGateway
 metadata:
-  name: private-rt
+  name: main-igw
   namespace: crossplane-system
-  labels:
-    app: main-vpc
-    type: private
 spec:
   forProvider:
     region: eu-west-1
@@ -13,7 +10,7 @@ spec:
       matchLabels:
         app: main-vpc
     tags:
-      Name: private-rt
+      Name: main-igw
       ManagedBy: crossplane
   providerConfigRef:
     name: main

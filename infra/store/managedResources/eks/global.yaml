@@ -1,0 +1,309 @@
+# ============================================================
+# Crossplane v2 - EKS Cluster & Node Groups avec Bottlerocket
+# Provider: upbound/provider-aws-eks
+# ============================================================
+
+---
+# Security Group pour le Control Plane EKS
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: SecurityGroup
+metadata:
+  name: eks-cluster-sg
+spec:
+  forProvider:
+    region: eu-west-1
+    name: eks-cluster-sg
+    description: Security group for EKS cluster control plane
+    vpcIdSelector:
+      matchLabels:
+        crossplane.io/name: eks-vpc
+    tags:
+      Name: eks-cluster-sg
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: aws-provider-config
+
+---
+# Egress rule pour le cluster SG
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: SecurityGroupRule
+metadata:
+  name: eks-cluster-sg-egress
+spec:
+  forProvider:
+    region: eu-west-1
+    type: egress
+    fromPort: 0
+    toPort: 0
+    protocol: "-1"
+    cidrBlocks:
+      - "0.0.0.0/0"
+    securityGroupIdSelector:
+      matchLabels:
+        crossplane.io/name: eks-cluster-sg
+    description: Allow all outbound traffic
+  providerConfigRef:
+    name: aws-provider-config
+
+---
+# EKS Cluster
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: Cluster
+metadata:
+  name: eks-prod
+  annotations:
+    crossplane.io/external-name: eks-prod
+spec:
+  forProvider:
+    region: eu-west-1
+    version: "1.31"
+    roleArnSelector:
+      matchLabels:
+        crossplane.io/name: eks-cluster-role
+    vpcConfig:
+      - endpointPrivateAccess: true
+        endpointPublicAccess: true
+        publicAccessCidrs:
+          - "0.0.0.0/0"
+        subnetIdSelector:
+          matchLabels:
+            network-type: eks-subnet
+        securityGroupIdSelector:
+          matchLabels:
+            crossplane.io/name: eks-cluster-sg
+    enabledClusterLogTypes:
+      - api
+      - audit
+      - authenticator
+      - controllerManager
+      - scheduler
+    tags:
+      Name: eks-prod
+      Environment: production
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: aws-provider-config
+
+---
+# Node Group - General Purpose ON_DEMAND avec Bottlerocket
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: NodeGroup
+metadata:
+  name: eks-ng-general
+spec:
+  forProvider:
+    region: eu-west-1
+    clusterNameSelector:
+      matchLabels:
+        crossplane.io/name: eks-prod
+    nodeRoleArnSelector:
+      matchLabels:
+        crossplane.io/name: eks-node-role
+    subnetIdSelector:
+      matchLabels:
+        network-type: eks-subnet-private
+    # Bottlerocket x86_64 - utiliser BOTTLEROCKET_ARM_64 pour ARM (Graviton)
+    amiType: BOTTLEROCKET_x86_64
+    instanceTypes:
+      - t3.medium
+    capacityType: ON_DEMAND
+    scalingConfig:
+      - minSize: 1
+        maxSize: 10
+        desiredSize: 2
+    updateConfig:
+      - maxUnavailable: 1
+    # Configuration Bottlerocket via userData (TOML format, encodé en base64)
+    # Les settings système Bottlerocket se passent ici.
+    # Exemple minimal - Crossplane/EKS injecte automatiquement cluster-name et endpoint.
+    # Si tu veux personnaliser (ex: kernel settings, container image pulls), décommente:
+    # launchTemplate:
+    #   - id: lt-xxxxxxxxxxxxxxxxx   # référencer un Launch Template EC2 avec userData TOML
+    #     version: "1"
+    labels:
+      role: general
+      node-type: on-demand
+      os: bottlerocket
+    tags:
+      Name: eks-ng-general-bottlerocket
+      ManagedBy: crossplane
+      OS: bottlerocket
+      "k8s.io/cluster-autoscaler/enabled": "true"
+      "k8s.io/cluster-autoscaler/eks-prod": "owned"
+  providerConfigRef:
+    name: aws-provider-config
+
+---
+# Node Group - SPOT avec Bottlerocket
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: NodeGroup
+metadata:
+  name: eks-ng-spot
+spec:
+  forProvider:
+    region: eu-west-1
+    clusterNameSelector:
+      matchLabels:
+        crossplane.io/name: eks-prod
+    nodeRoleArnSelector:
+      matchLabels:
+        crossplane.io/name: eks-node-role
+    subnetIdSelector:
+      matchLabels:
+        network-type: eks-subnet-private
+    # Bottlerocket x86_64
+    amiType: BOTTLEROCKET_x86_64
+    instanceTypes:
+      - t3.medium
+      - t3.large
+      - t3a.medium
+      - t3a.large
+    capacityType: SPOT
+    scalingConfig:
+      - minSize: 0
+        maxSize: 10
+        desiredSize: 1
+    updateConfig:
+      - maxUnavailable: 1
+    labels:
+      role: spot
+      node-type: spot
+      os: bottlerocket
+    taints:
+      - key: spot
+        value: "true"
+        effect: PREFER_NO_SCHEDULE
+    tags:
+      Name: eks-ng-spot-bottlerocket
+      ManagedBy: crossplane
+      OS: bottlerocket
+      "k8s.io/cluster-autoscaler/enabled": "true"
+      "k8s.io/cluster-autoscaler/eks-prod": "owned"
+  providerConfigRef:
+    name: aws-provider-config
+
+---
+# [OPTIONNEL] Node Group Graviton (ARM) avec Bottlerocket
+# Les instances Graviton offrent un meilleur rapport perf/prix
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: NodeGroup
+metadata:
+  name: eks-ng-graviton
+spec:
+  forProvider:
+    region: eu-west-1
+    clusterNameSelector:
+      matchLabels:
+        crossplane.io/name: eks-prod
+    nodeRoleArnSelector:
+      matchLabels:
+        crossplane.io/name: eks-node-role
+    subnetIdSelector:
+      matchLabels:
+        network-type: eks-subnet-private
+    # Bottlerocket ARM64 pour instances Graviton
+    amiType: BOTTLEROCKET_ARM_64
+    instanceTypes:
+      - t4g.medium
+      - t4g.large
+    capacityType: ON_DEMAND
+    scalingConfig:
+      - minSize: 0
+        maxSize: 5
+        desiredSize: 0
+    updateConfig:
+      - maxUnavailable: 1
+    labels:
+      role: graviton
+      node-type: arm64
+      os: bottlerocket
+      kubernetes.io/arch: arm64
+    taints:
+      - key: arch
+        value: arm64
+        effect: NO_SCHEDULE
+    tags:
+      Name: eks-ng-graviton-bottlerocket
+      ManagedBy: crossplane
+      OS: bottlerocket
+      Arch: arm64
+      "k8s.io/cluster-autoscaler/enabled": "true"
+      "k8s.io/cluster-autoscaler/eks-prod": "owned"
+  providerConfigRef:
+    name: aws-provider-config
+
+---
+# EKS Add-on: CoreDNS
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: Addon
+metadata:
+  name: eks-addon-coredns
+spec:
+  forProvider:
+    region: eu-west-1
+    clusterNameSelector:
+      matchLabels:
+        crossplane.io/name: eks-prod
+    addonName: coredns
+    resolveConflicts: OVERWRITE
+    tags:
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: aws-provider-config
+
+---
+# EKS Add-on: kube-proxy
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: Addon
+metadata:
+  name: eks-addon-kube-proxy
+spec:
+  forProvider:
+    region: eu-west-1
+    clusterNameSelector:
+      matchLabels:
+        crossplane.io/name: eks-prod
+    addonName: kube-proxy
+    resolveConflicts: OVERWRITE
+    tags:
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: aws-provider-config
+
+---
+# EKS Add-on: vpc-cni
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: Addon
+metadata:
+  name: eks-addon-vpc-cni
+spec:
+  forProvider:
+    region: eu-west-1
+    clusterNameSelector:
+      matchLabels:
+        crossplane.io/name: eks-prod
+    addonName: vpc-cni
+    resolveConflicts: OVERWRITE
+    tags:
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: aws-provider-config
+
+---
+# EKS Add-on: aws-ebs-csi-driver
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: Addon
+metadata:
+  name: eks-addon-ebs-csi
+spec:
+  forProvider:
+    region: eu-west-1
+    clusterNameSelector:
+      matchLabels:
+        crossplane.io/name: eks-prod
+    addonName: aws-ebs-csi-driver
+    resolveConflicts: OVERWRITE
+    tags:
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: aws-provider-config
