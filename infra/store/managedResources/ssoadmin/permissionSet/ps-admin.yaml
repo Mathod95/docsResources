@@ -1,0 +1,20 @@
+apiVersion: ssoadmin.aws.m.upbound.io/v1beta1
+kind: PermissionSet
+metadata:
+  name: ps-admin
+  namespace: platform
+  labels:
+    team: admin
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: eu-west-3
+    name: Admin
+    instanceArn: arn:aws:sso:::instance/ssoins-xxxxxxxx
+    sessionDuration: PT8H
+    description: "Acces administrateur complet - tous les comptes"
+    tags:
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

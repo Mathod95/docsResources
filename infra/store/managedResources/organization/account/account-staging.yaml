@@ -1,0 +1,19 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: Account
+metadata:
+  name: staging
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: staging
+    email: aws+staging@mathod.io
+    parentIdSelector:
+      matchLabels:
+        crossplane.io/name: ou-non-production
+    tags:
+      ManagedBy: crossplane
+      Environment: staging
+  providerConfigRef:
+    name: default
+    kind: ProviderConfig
+

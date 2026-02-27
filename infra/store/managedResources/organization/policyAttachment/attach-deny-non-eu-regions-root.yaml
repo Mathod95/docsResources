@@ -1,0 +1,16 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: PolicyAttachment
+metadata:
+  name: attach-deny-non-eu-regions-root
+  namespace: platform
+  labels:
+    managed-by: crossplane
+spec:
+  forProvider:
+    policyIdSelector:
+      matchLabels:
+        crossplane.io/name: scp-deny-non-eu-regions
+    targetId: r-xxxx
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

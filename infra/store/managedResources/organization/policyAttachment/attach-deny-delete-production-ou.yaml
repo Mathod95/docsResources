@@ -1,0 +1,18 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: PolicyAttachment
+metadata:
+  name: attach-deny-delete-production-ou
+  namespace: platform
+  labels:
+    managed-by: crossplane
+spec:
+  forProvider:
+    policyIdSelector:
+      matchLabels:
+        crossplane.io/name: scp-deny-delete-production
+    targetIdSelector:
+      matchLabels:
+        crossplane.io/name: ou-production
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

@@ -1,0 +1,36 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: Policy
+metadata:
+  name: scp-deny-delete-production
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: DenyDeleteProduction
+    type: SERVICE_CONTROL_POLICY
+    description: "Bloque la suppression de ressources critiques en Production"
+    content: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "DenyDeleteCriticalResources",
+            "Effect": "Deny",
+            "Action": [
+              "ec2:DeleteVpc",
+              "ec2:DeleteSubnet",
+              "ec2:TerminateInstances",
+              "rds:DeleteDBInstance",
+              "rds:DeleteDBCluster",
+              "eks:DeleteCluster",
+              "eks:DeleteNodegroup",
+              "s3:DeleteBucket"
+            ],
+            "Resource": "*"
+          }
+        ]
+      }
+    tags:
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

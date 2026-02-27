@@ -1,0 +1,24 @@
+apiVersion: ssoadmin.aws.m.upbound.io/v1beta1
+kind: AccountAssignment
+metadata:
+  name: admin-mathod-account-production
+  namespace: platform
+  labels:
+    team: admin
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: eu-west-1
+    instanceArn: arn:aws:sso:::instance/ssoins-xxxxxxxx
+    permissionSetArnSelector:
+      matchLabels:
+        crossplane.io/name: ps-admin
+    principalType: USER
+    principalIdSelector:
+      matchLabels:
+        crossplane.io/name: admin-mathod
+    targetType: AWS_ACCOUNT
+    targetId: "ACCOUNT_ID_PRODUCTION"
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

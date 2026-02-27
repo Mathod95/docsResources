@@ -1,0 +1,19 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: Account
+metadata:
+  name: audit
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: audit
+    email: aws+audit@mathod.io
+    parentIdSelector:
+      matchLabels:
+        crossplane.io/name: ou-security
+    tags:
+      ManagedBy: crossplane
+      Team: security
+  providerConfigRef:
+    name: default
+    kind: ProviderConfig
+

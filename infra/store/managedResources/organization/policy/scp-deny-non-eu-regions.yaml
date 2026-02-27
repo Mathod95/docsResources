@@ -1,0 +1,43 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: Policy
+metadata:
+  name: scp-deny-non-eu-regions
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: DenyNonEURegions
+    type: SERVICE_CONTROL_POLICY
+    description: "Bloque toutes les actions hors eu-west-1 et eu-west-3"
+    content: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "DenyNonEURegions",
+            "Effect": "Deny",
+            "NotAction": [
+              "iam:*",
+              "organizations:*",
+              "support:*",
+              "sts:*",
+              "cloudfront:*",
+              "route53:*",
+              "waf:*"
+            ],
+            "Resource": "*",
+            "Condition": {
+              "StringNotEquals": {
+                "aws:RequestedRegion": [
+                  "eu-west-1",
+                  "eu-west-3"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    tags:
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

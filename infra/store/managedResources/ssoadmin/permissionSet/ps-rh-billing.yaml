@@ -1,0 +1,20 @@
+apiVersion: ssoadmin.aws.m.upbound.io/v1beta1
+kind: PermissionSet
+metadata:
+  name: ps-rh-billing
+  namespace: platform
+  labels:
+    team: rh
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: eu-west-3
+    name: RH-Billing
+    instanceArn: arn:aws:sso:::instance/ssoins-xxxxxxxx
+    sessionDuration: PT8H
+    description: "Acces facturation equipe RH"
+    tags:
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

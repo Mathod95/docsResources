@@ -1,0 +1,21 @@
+apiVersion: ssoadmin.aws.m.upbound.io/v1beta1
+kind: AccountAssignment
+metadata:
+  name: rh-marie-account-rh
+  namespace: platform
+spec:
+  forProvider:
+    region: eu-west-3
+    instanceArn: arn:aws:sso:::instance/ssoins-xxxxxxxx
+    permissionSetArnSelector:
+      matchLabels:
+        crossplane.io/name: ps-rh-billing
+    principalType: USER
+    principalIdSelector:
+      matchLabels:
+        crossplane.io/name: rh-marie
+    targetType: AWS_ACCOUNT
+    targetId: "ACCOUNT_ID_RH"
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

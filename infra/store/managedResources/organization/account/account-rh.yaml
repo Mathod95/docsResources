@@ -1,0 +1,19 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: Account
+metadata:
+  name: billing
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: billing
+    email: aws+rh@mathod.io
+    parentIdSelector:
+      matchLabels:
+        crossplane.io/name: ou-business
+    tags:
+      ManagedBy: crossplane
+      Team: rh
+  providerConfigRef:
+    name: default
+    kind: ProviderConfig
+

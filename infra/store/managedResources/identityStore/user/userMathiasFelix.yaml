@@ -1,0 +1,17 @@
+apiVersion: identitystore.aws.m.upbound.io/v1beta1
+kind: User
+metadata:
+  name: mathias-felix
+  namespace: crossplane-system
+spec:
+  forProvider:
+    identityStoreId: d-80677ee037
+    region: eu-west-3
+    displayName: Mathias Felix
+    userName: mfx
+    name:
+      familyName: Felix
+      givenName: Mathias
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

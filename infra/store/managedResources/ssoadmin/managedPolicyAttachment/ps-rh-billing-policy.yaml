@@ -1,0 +1,19 @@
+apiVersion: ssoadmin.aws.m.upbound.io/v1beta1
+kind: ManagedPolicyAttachment
+metadata:
+  name: ps-rh-billing-policy
+  namespace: platform
+  labels:
+    team: rh
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: eu-west-3
+    instanceArn: arn:aws:sso:::instance/ssoins-xxxxxxxx
+    permissionSetArnSelector:
+      matchLabels:
+        crossplane.io/name: ps-rh-billing
+    managedPolicyArn: arn:aws:iam::aws:policy/job-function/Billing
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

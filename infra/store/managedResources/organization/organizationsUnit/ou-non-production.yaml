@@ -1,0 +1,16 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: OrganizationalUnit
+metadata:
+  name: ou-non-production
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: Non-Production
+    parentIdSelector:
+      matchLabels:
+        crossplane.io/name: ou-environments
+    tags:
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

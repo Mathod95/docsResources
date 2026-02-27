@@ -1,0 +1,14 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: OrganizationalUnit
+metadata:
+  name: ou-business
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: Business
+    parentId: r-xxxx
+    tags:
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

@@ -1,0 +1,27 @@
+apiVersion: organizations.aws.m.upbound.io/v1beta1
+kind: Policy
+metadata:
+  name: scp-deny-leave-org
+  namespace: crossplane-system
+spec:
+  forProvider:
+    name: DenyLeaveOrganization
+    type: SERVICE_CONTROL_POLICY
+    description: "Empeche un compte de quitter l'organization"
+    content: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "DenyLeaveOrganization",
+            "Effect": "Deny",
+            "Action": "organizations:LeaveOrganization",
+            "Resource": "*"
+          }
+        ]
+      }
+    tags:
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

@@ -1,0 +1,21 @@
+apiVersion: ssoadmin.aws.m.upbound.io/v1beta1
+kind: CustomerManagedPolicyAttachment
+metadata:
+  name: ps-devops-ec2
+  namespace: platform
+  labels:
+    team: devops
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: eu-west-3
+    instanceArn: arn:aws:sso:::instance/ssoins-xxxxxxxx
+    permissionSetArnSelector:
+      matchLabels:
+        crossplane.io/name: ps-devops
+    customerManagedPolicyReference:
+      name: devops-ec2-no-delete
+      path: "/platform/"
+  providerConfigRef:
+    name: main
+    kind: ProviderConfig

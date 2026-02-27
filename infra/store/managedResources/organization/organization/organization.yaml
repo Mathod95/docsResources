@@ -1,11 +1,11 @@
 apiVersion: organizations.aws.m.upbound.io/v1beta1
 kind: Organization
 metadata:
-  name: my-organization
+  name: mathod.io
   namespace: crossplane-system
 spec:
   forProvider:
     featureSet: ALL
   providerConfigRef:
-    name: default
+    name: main
     kind: ProviderConfig
