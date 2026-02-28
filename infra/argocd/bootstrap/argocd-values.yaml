@@ -1,0 +1,34 @@
+# Argo CD Server configuration
+server:
+  # Enable and configure extensions
+  extensions:
+    enabled: true
+    extensionList:
+      - name: extension-metrics
+        env:
+          - name: EXTENSION_URL
+            value: https://github.com/argoproj-labs/argocd-extension-metrics/releases/download/v1.0.3/extension.tar.gz
+          - name: EXTENSION_CHECKSUM_URL
+            value: https://github.com/argoproj-labs/argocd-extension-metrics/releases/download/v1.0.3/extension_checksums.txt
+
+# Argo CD configuration
+configs:
+  # ConfigMap for extension configuration
+  cm:
+    extension.config: |
+      extensions:
+        - name: metrics
+          backend:
+            services:
+              - url: http://argocd-metrics-server.argocd.svc:9003
+
+  # Server parameters
+  params:
+    # Enable the proxy extension feature (required for metrics)
+    server.enable.proxy.extension: "true"
+
+  # RBAC configuration
+  rbac:
+    policy.csv: |
+      p, role:readonly, extensions, invoke, metrics, allow
+      p, role:admin, extensions, invoke, metrics, allow

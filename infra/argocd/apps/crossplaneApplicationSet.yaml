@@ -1,0 +1,77 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: crossplane
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+
+  generators:
+  - list:
+      elements:
+      - server: https://production-control-plane:6443
+        environment: production
+      - server: https://staging-control-plane:6443
+        environment: staging
+
+  template:
+    metadata:
+      name: 'crossplane-{{.environment}}'
+      namespace: argocd
+      labels:
+        app: crossplane
+        environment: '{{.environment}}'
+      annotations:
+        argocd.argoproj.io/manifest-generate-paths: '.;..'
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+
+    spec:
+      project: default
+
+      source:
+        repoURL: https://gitlab.com/mathod-io/infrastructure/services/argocd.git
+        targetRevision: main
+        path: charts/crossplane
+
+        helm:
+          releaseName: crossplane
+
+          valueFiles:
+            - values.yaml                               # Valeurs communes (values.yaml à la racine)
+            - environments/{{.environment}}/values.yaml # Valeurs spécifiques à l'environnement
+          #skipCrds: false
+
+      destination:
+        server: '{{.server}}'
+        namespace: crossplane-system
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: false
+
+        syncOptions:
+        - CreateNamespace=true
+        - ServerSideApply=true
+        #- RespectIgnoreDifferences=true
+
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+      revisionHistoryLimit: 3
+
+      ignoreDifferences:
+      - group: pkg.crossplane.io
+        kind: Provider
+        jsonPointers:
+        - /status
+      - group: aws.upbound.io
+        kind: ProviderConfig
+        jsonPointers:
+        - /status
