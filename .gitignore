@@ -1,3 +1,4 @@
 infra/secret.txt
 infra/store/managedResources/organization/account/account.yaml.example
 infra/store/managedResources/identityStore/userMathiasFelix.yaml
+infra/argocd/secret.txt
